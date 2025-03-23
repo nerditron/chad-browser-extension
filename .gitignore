@@ -93,4 +93,8 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
+# Editors
+*.swp
+*.swo
+
 # End of https://www.gitignore.io/api/node
