@@ -1,36 +1,31 @@
 <html>
-
   <head>
     <link rel="stylesheet" href="./bootstrap.css">
   </head>
-
   <body>
-    <h1>
-      Alex
-    </h1>
-
+    <h1>Chad</h1>
     <form>
-      <label
-        for="select-profanitySureness"
-      >
-        Profanity Likeliness Threshhold
-      </label>
-      <select
-        class="custom-select"
-        id="select-profanitySureness"
-      >
-        <option value="0">0 (unlikely)</option>
-        <option value="1">1 (maybe)</option>
-        <option value="2">2 (likely)</option>
-      </select>
+      <div class="form-check">
+        <input type="checkbox" id="noBinary" class="form-check-input">
+        <label for="noBinary" class="form-check-label">No Binary Terms</label>
+      </div>
+      <div class="form-group">
+        <label for="allow">Allow</label>
+        <input type="text" id="allow" class="form-control" placeholder="e.g., privilege">
+      </div>
+      <div class="form-group">
+        <label for="deny">Deny</label>
+        <input type="text" id="deny" class="form-control" placeholder="e.g., social-justice">
+      </div>
     </form>
-
     <script src="index.ts"></script>
-
     <style>
       body {
         padding: 12px;
         width: 20em;
+      }
+      .form-check, .form-group {
+        margin-bottom: 1rem;
       }
     </style>
   </body>
