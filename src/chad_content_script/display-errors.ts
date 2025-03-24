@@ -10,12 +10,14 @@ const getTT = _.memoize((element: HTMLInputElement) => {
 
 /**
  * Constructs an HTML element containing the error messages for display in a tooltip.
+ * Prefixes each error with "Chad Warning: " to align with Chad's purpose of flagging woke language.
  * @param errors - Array of error messages to display.
  * @returns An HTML span element with formatted error messages.
  */
 function constructTitleElement(errors: string[]): HTMLElement {
   const element = document.createElement("span");
-  const text = errors.join("<br><br>");
+  const prefixedErrors = errors.map(error => `Chad Warning: ${error}`);
+  const text = prefixedErrors.join("<br><br>");
   element.innerHTML = text;
   return element;
 }
