@@ -1,30 +1,67 @@
-import { Options, ProfanitySureness, isValidProfanitySureness } from "./options";
+import { Options, OptionsConfig } from "./options";
 
-const profanitySurenessSelect = document.getElementById("select-profanitySureness") as HTMLSelectElement;
+/**
+ * References to form elements.
+ */
+const noBinaryCheckbox = document.getElementById("noBinary") as HTMLInputElement;
+const allowInput = document.getElementById("allow") as HTMLInputElement;
+const denyInput = document.getElementById("deny") as HTMLInputElement;
 
-function setProfanitySurenessSelector(profanity: ProfanitySureness) {
-  const options = Array.from(profanitySurenessSelect.options);
-
-  const optionToSelect = options.find(
-    o => o.value === "" + profanity
-  );
-
-  profanitySurenessSelect.selectedIndex = optionToSelect.index;
+/**
+ * Loads the current options into the form inputs.
+ * @param options - The current configuration options.
+ */
+function loadOptionsIntoForm(options: OptionsConfig): void {
+  noBinaryCheckbox.checked = options.noBinary ?? false;
+  allowInput.value = options.allow?.join(", ") ?? "";
+  denyInput.value = options.deny?.join(", ") ?? "";
 }
 
-function profanitySurenessSelectListener(evt: Event) {
-  const target = evt.target as HTMLOptionElement;
-  const profanity = +target.value;
-  if (isValidProfanitySureness(profanity)) {
-    Options.setProfanitySureness(profanity);
+/**
+ * Saves the current form values to Chrome storage.
+ */
+async function saveOptions(): Promise<void> {
+  try {
+    const options: OptionsConfig = {
+      noBinary: noBinaryCheckbox.checked,
+      allow: allowInput.value
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0),
+      deny: denyInput.value
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0),
+    };
+    await Options.setOptions(options);
+  } catch (error) {
+    console.error("Failed to save options:", error);
+    alert("Error saving options. Check the console for details.");
   }
 }
 
-async function main() {
-  const profanitySureness = await Options.getProfanitySureness();
-  setProfanitySurenessSelector(profanitySureness);
+/**
+ * Event listener for input changes.
+ */
+function handleInputChange(): void {
+  saveOptions();
+}
 
-  profanitySurenessSelect.addEventListener("change", profanitySurenessSelectListener);
+/**
+ * Initializes the options page by loading current options and setting up event listeners.
+ */
+async function main(): Promise<void> {
+  try {
+    const options = await Options.getOptions();
+    loadOptionsIntoForm(options);
+
+    noBinaryCheckbox.addEventListener("change", handleInputChange);
+    allowInput.addEventListener("input", handleInputChange);
+    denyInput.addEventListener("input", handleInputChange);
+  } catch (error) {
+    console.error("Failed to load options:", error);
+    alert("Error loading options. Check the console for details.");
+  }
 }
 
 main();

@@ -97,4 +97,8 @@ typings/
 *.swp
 *.swo
 
+# Build files
+.parcel-cache/
+dist/
+
 # End of https://www.gitignore.io/api/node
