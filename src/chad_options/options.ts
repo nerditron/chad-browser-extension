@@ -59,7 +59,7 @@ function isChromeExtensionEnvironment(): boolean {
 function getOptions(): Promise<OptionsConfig> {
   // If not in a Chrome extension environment, return default options
   if (!isChromeExtensionEnvironment()) {
-    console.warn('Chrome storage API not available. Using default options.');
+    // console.warn('Chrome storage API not available. Using default options.');
     return Promise.resolve({ ...DEFAULT_OPTIONS });
   }
 
