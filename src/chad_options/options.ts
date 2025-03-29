@@ -12,7 +12,6 @@ declare global {
 export type OptionsConfig = {
   allow?: string[];
   deny?: string[];
-  noBinary?: boolean;
 };
 
 /**
@@ -21,7 +20,6 @@ export type OptionsConfig = {
 const STORAGE_KEYS = {
   ALLOW: "CHAD_ALLOW",
   DENY: "CHAD_DENY",
-  NO_BINARY: "CHAD_NO_BINARY",
 };
 
 /**
@@ -30,7 +28,6 @@ const STORAGE_KEYS = {
 const DEFAULT_OPTIONS: OptionsConfig = {
   allow: [],
   deny: [],
-  noBinary: false,
 };
 
 /**
@@ -42,15 +39,6 @@ function isStringArrayOrUndefined(value: unknown): value is string[] | undefined
   if (value === undefined) return true;
   if (!Array.isArray(value)) return false;
   return value.every((item) => typeof item === "string");
-}
-
-/**
- * Validates that a value is a boolean or undefined.
- * @param value - The value to validate.
- * @returns True if the value is a boolean or undefined, false otherwise.
- */
-function isBooleanOrUndefined(value: unknown): value is boolean | undefined {
-  return value === undefined || typeof value === "boolean";
 }
 
 /**
@@ -77,7 +65,7 @@ function getOptions(): Promise<OptionsConfig> {
 
   return new Promise((resolve) => {
     window.chrome!.storage.sync.get(
-      [STORAGE_KEYS.ALLOW, STORAGE_KEYS.DENY, STORAGE_KEYS.NO_BINARY],
+      [STORAGE_KEYS.ALLOW, STORAGE_KEYS.DENY],
       (result: { [key: string]: unknown }) => {
         const options: OptionsConfig = { ...DEFAULT_OPTIONS };
 
@@ -89,11 +77,6 @@ function getOptions(): Promise<OptionsConfig> {
         // Validate and set 'deny'
         if (isStringArrayOrUndefined(result[STORAGE_KEYS.DENY])) {
           options.deny = result[STORAGE_KEYS.DENY] as string[] ?? DEFAULT_OPTIONS.deny;
-        }
-
-        // Validate and set 'noBinary'
-        if (isBooleanOrUndefined(result[STORAGE_KEYS.NO_BINARY])) {
-          options.noBinary = result[STORAGE_KEYS.NO_BINARY] as boolean ?? DEFAULT_OPTIONS.noBinary;
         }
 
         resolve(options);
@@ -131,14 +114,6 @@ function setOptions(options: OptionsConfig): Promise<void> {
         return;
       }
       storageData[STORAGE_KEYS.DENY] = options.deny;
-    }
-
-    if (options.noBinary !== undefined) {
-      if (!isBooleanOrUndefined(options.noBinary)) {
-        reject(new Error("Invalid 'noBinary' value: must be a boolean"));
-        return;
-      }
-      storageData[STORAGE_KEYS.NO_BINARY] = options.noBinary;
     }
 
     window.chrome!.storage.sync.set(storageData, () => {

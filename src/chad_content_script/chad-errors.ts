@@ -37,11 +37,6 @@ export async function getChadErrors(input: string): Promise<ChadError[]> {
       config.allow = options.allow;
     }
     
-    // Copy other options
-    if (options.noBinary !== undefined) {
-      config.noBinary = options.noBinary;
-    }
-    
     // Use the global chad object that was exposed by chad-bundle.js
     const report = window.chad.text(input, config);
     const { messages } = report;

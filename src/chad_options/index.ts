@@ -3,7 +3,6 @@ import { Options, OptionsConfig } from "./options";
 /**
  * References to form elements.
  */
-const noBinaryCheckbox = document.getElementById("noBinary") as HTMLInputElement;
 const allowInput = document.getElementById("allow") as HTMLInputElement;
 const denyInput = document.getElementById("deny") as HTMLInputElement;
 
@@ -12,7 +11,6 @@ const denyInput = document.getElementById("deny") as HTMLInputElement;
  * @param options - The current configuration options.
  */
 function loadOptionsIntoForm(options: OptionsConfig): void {
-  noBinaryCheckbox.checked = options.noBinary ?? false;
   allowInput.value = options.allow?.join(", ") ?? "";
   denyInput.value = options.deny?.join(", ") ?? "";
 }
@@ -23,7 +21,6 @@ function loadOptionsIntoForm(options: OptionsConfig): void {
 async function saveOptions(): Promise<void> {
   try {
     const options: OptionsConfig = {
-      noBinary: noBinaryCheckbox.checked,
       allow: allowInput.value
         .split(",")
         .map((s) => s.trim())
@@ -55,7 +52,6 @@ async function main(): Promise<void> {
     const options = await Options.getOptions();
     loadOptionsIntoForm(options);
 
-    noBinaryCheckbox.addEventListener("change", handleInputChange);
     allowInput.addEventListener("input", handleInputChange);
     denyInput.addEventListener("input", handleInputChange);
   } catch (error) {
