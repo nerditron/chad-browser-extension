@@ -3,18 +3,14 @@
   "description": "Catch far-left, woke language in your writing",
   "version": "1.1",
   "author": "Simon Knott",
-  "developer": {
-    "name": "Simon Knott",
-    "url": "https://simonknott.de"
-  },
   "homepage_url": "https://github.com/skn0tt/alex-browser-extension",
   "icons": {
     "48": "chad_logo_48.png",
     "96": "chad_logo_96.png",
     "128": "chad_logo_128.png"
   },
-  "manifest_version": 2,
-  "browser_action": {
+  "manifest_version": 3,
+  "action": {
     "default_popup": "chad_options/dist/index.html",
     "default_icon": "chad_logo_48.png"
   },
@@ -27,10 +23,11 @@
     {
       "matches": ["http://*/*", "https://*/*"],
       "js": [
+        "chad_content_script/dist/main.js",
         "chad_content_script/dist/index.js"
       ],
       "css": [
-        "chad_content_script/index.css"
+        "chad_content_script/dist/styles.css"
       ]
     }
   ]

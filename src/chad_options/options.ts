@@ -1,3 +1,11 @@
+/// <reference types="web-ext-types" />
+
+declare global {
+  interface Window {
+    chrome?: typeof chrome;
+  }
+}
+
 /**
  * Configuration options for the Chad browser extension.
  */
@@ -46,29 +54,46 @@ function isBooleanOrUndefined(value: unknown): value is boolean | undefined {
 }
 
 /**
+ * Checks if the Chrome extension API is available.
+ * @returns True if Chrome extension API is available, false otherwise.
+ */
+function isChromeExtensionEnvironment(): boolean {
+  return typeof window !== 'undefined' && 
+         typeof window.chrome !== 'undefined' && 
+         typeof window.chrome.storage !== 'undefined' && 
+         typeof window.chrome.storage.sync !== 'undefined';
+}
+
+/**
  * Retrieves the Chad configuration options from Chrome storage.
  * @returns A promise resolving to the OptionsConfig object.
  */
 function getOptions(): Promise<OptionsConfig> {
+  // If not in a Chrome extension environment, return default options
+  if (!isChromeExtensionEnvironment()) {
+    console.warn('Chrome storage API not available. Using default options.');
+    return Promise.resolve({ ...DEFAULT_OPTIONS });
+  }
+
   return new Promise((resolve) => {
-    chrome.storage.sync.get(
+    window.chrome!.storage.sync.get(
       [STORAGE_KEYS.ALLOW, STORAGE_KEYS.DENY, STORAGE_KEYS.NO_BINARY],
       (result: { [key: string]: unknown }) => {
         const options: OptionsConfig = { ...DEFAULT_OPTIONS };
 
         // Validate and set 'allow'
         if (isStringArrayOrUndefined(result[STORAGE_KEYS.ALLOW])) {
-          options.allow = result[STORAGE_KEYS.ALLOW] ?? DEFAULT_OPTIONS.allow;
+          options.allow = result[STORAGE_KEYS.ALLOW] as string[] ?? DEFAULT_OPTIONS.allow;
         }
 
         // Validate and set 'deny'
         if (isStringArrayOrUndefined(result[STORAGE_KEYS.DENY])) {
-          options.deny = result[STORAGE_KEYS.DENY] ?? DEFAULT_OPTIONS.deny;
+          options.deny = result[STORAGE_KEYS.DENY] as string[] ?? DEFAULT_OPTIONS.deny;
         }
 
         // Validate and set 'noBinary'
         if (isBooleanOrUndefined(result[STORAGE_KEYS.NO_BINARY])) {
-          options.noBinary = result[STORAGE_KEYS.NO_BINARY] ?? DEFAULT_OPTIONS.noBinary;
+          options.noBinary = result[STORAGE_KEYS.NO_BINARY] as boolean ?? DEFAULT_OPTIONS.noBinary;
         }
 
         resolve(options);
@@ -83,6 +108,12 @@ function getOptions(): Promise<OptionsConfig> {
  * @returns A promise that resolves when the options are saved.
  */
 function setOptions(options: OptionsConfig): Promise<void> {
+  // If not in a Chrome extension environment, just log and resolve
+  if (!isChromeExtensionEnvironment()) {
+    console.warn('Chrome storage API not available. Options not saved:', options);
+    return Promise.resolve();
+  }
+
   return new Promise((resolve, reject) => {
     const storageData: { [key: string]: unknown } = {};
 
@@ -110,9 +141,9 @@ function setOptions(options: OptionsConfig): Promise<void> {
       storageData[STORAGE_KEYS.NO_BINARY] = options.noBinary;
     }
 
-    chrome.storage.sync.set(storageData, () => {
-      if (chrome.runtime.lastError) {
-        reject(new Error(chrome.runtime.lastError.message));
+    window.chrome!.storage.sync.set(storageData, () => {
+      if (window.chrome!.runtime.lastError) {
+        reject(new Error(window.chrome!.runtime.lastError.message));
       } else {
         resolve();
       }

@@ -1,11 +1,19 @@
-import Tooltip from "tooltip.js";
+import tippy, { Instance } from "tippy.js";
 import * as _ from "lodash";
 
-const getTT = _.memoize((element: HTMLInputElement) => {
-  return new Tooltip(element, {
+// Extend the tippy.js Instance type to include the methods we need
+interface ExtendedTippyInstance extends Instance {
+  updateTitleContent?: (content: Element | string) => void;
+  setContent?: (content: Element | string) => void;
+  destroy?: () => void;
+  dispose?: () => void;
+}
+
+const getTT = _.memoize((element: HTMLInputElement): ExtendedTippyInstance => {
+  return tippy(element, {
     placement: "bottom",
-    html: true,
-  });
+    allowHTML: true,
+  }) as ExtendedTippyInstance;
 });
 
 /**
@@ -30,7 +38,16 @@ function constructTitleElement(errors: string[]): HTMLElement {
 export function displayErrors(errors: string[], element: HTMLInputElement) {
   const tt = getTT(element);
   const titleElement = constructTitleElement(errors);
-  tt.updateTitleContent(titleElement);
+  
+  // Use setContent or updateTitleContent based on what's available
+  if (typeof tt.setContent === 'function') {
+    // tippy.js v6+ uses setContent
+    tt.setContent(titleElement);
+  } else if (typeof tt.updateTitleContent === 'function') {
+    // Older versions use updateTitleContent
+    tt.updateTitleContent(titleElement);
+  }
+  
   tt.show();
 }
 
@@ -39,7 +56,22 @@ export function displayErrors(errors: string[], element: HTMLInputElement) {
  * @param element - The input element whose tooltip should be hidden.
  */
 export function hideErrors(element: HTMLInputElement) {
-  const tt = getTT(element);
-  tt.dispose();
-  getTT.cache.delete(element);
+  // Check if there's a tooltip instance for this element in the cache
+  if (getTT.cache && getTT.cache.has(element)) {
+    const tt = getTT(element);
+    // Hide the tooltip first
+    tt.hide();
+    
+    // Try to dispose if the method exists
+    if (typeof tt.destroy === 'function') {
+      // tippy.js v6+ uses destroy instead of dispose
+      tt.destroy();
+    } else if (typeof tt.dispose === 'function') {
+      // Older versions of tippy.js use dispose
+      tt.dispose();
+    }
+    
+    // Remove from cache
+    getTT.cache.delete(element);
+  }
 }

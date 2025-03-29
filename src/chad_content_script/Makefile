@@ -1,7 +1,10 @@
 clean:
 	rm -rf dist .cache
 
-build: build_ts build_css
+build: build_chad build_ts build_css
+
+build_chad:
+	npx webpack --config ../../webpack.config.js
 
 build_ts: *.ts
 	npx parcel build ./index.ts --dist-dir dist

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chad Extension Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .instructions {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 20px;
+        }
+        .test-word {
+            font-weight: bold;
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chad Extension Test Page</h1>
+    
+    <div class="instructions">
+        <p>This page is designed to test the Chad browser extension. Type or paste text containing potentially flaggable terms in the input fields below.</p>
+        <p>Make sure you've configured the extension with terms to flag in the "Deny" field (e.g., "privilege, woke, social-justice").</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Input Field</h2>
+        <p>Type here (try words like <span class="test-word">privilege</span>, <span class="test-word">woke</span>, or <span class="test-word">social-justice</span>):</p>
+        <input type="text" id="test-input" placeholder="Type here...">
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Textarea</h2>
+        <p>Type or paste longer text here:</p>
+        <textarea id="test-textarea" rows="5" placeholder="Type or paste text here..."></textarea>
+    </div>
+    
+    <div class="test-section">
+        <h2>Pre-filled Examples</h2>
+        <p>These fields contain examples of potentially flaggable content:</p>
+        
+        <p>Example 1:</p>
+        <textarea id="example1" rows="3">The university is implementing new diversity and inclusion policies to address systemic privilege in academia.</textarea>
+        
+        <p>Example 2:</p>
+        <textarea id="example2" rows="3">Many people are becoming more woke about social justice issues in our society.</textarea>
+        
+        <p>Example 3:</p>
+        <input type="text" id="example3" value="Check your privilege">
+    </div>
+    
+    <div class="test-section">
+        <h2>Dynamic Content Test</h2>
+        <p>Click the button to add a new input field with potentially flaggable content:</p>
+        <button id="add-input">Add New Input</button>
+        <div id="dynamic-inputs"></div>
+    </div>
+    
+    <script>
+        // Add dynamic input functionality
+        document.getElementById('add-input').addEventListener('click', function() {
+            const container = document.getElementById('dynamic-inputs');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.value = 'New woke content for testing';
+            container.appendChild(newInput);
+        });
+    </script>
+</body>
+</html>
